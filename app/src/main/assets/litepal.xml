@@ -1,0 +1,10 @@
+<litepal>
+    <dbname value="beat_boss" />
+
+    <version value="1" />
+
+    <list>
+        <mapping class ="com.wiseking.ray.beatboss.db.DataHistory"/>
+    </list>
+
+</litepal>
