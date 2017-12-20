@@ -55,6 +55,7 @@ public class CheckHistory extends AppCompatActivity {
             Collections.sort(mDatas);             //如果有两个历史成绩以上就排序
         }
 
+        int j=1;          //为了给排名Chart赋值的临时变量
         //从数据库取出数据后赋值给Score实体类
         for (DataHistory mDataHistory:mDatas){
             Score scoreSet=new Score();
@@ -63,6 +64,7 @@ public class CheckHistory extends AppCompatActivity {
             scoreSet.setTime(mDataHistory.getTime());
             scoreSet.setScore(mDataHistory.getScore());
             mScore.add(scoreSet);
+            scoreSet.setChart(j++);  //给Chart赋值
         }
 
         //接受从游戏页面传来的数据，如果是游戏结束来看成绩就高亮显示此次成绩，
@@ -95,6 +97,7 @@ public class CheckHistory extends AppCompatActivity {
                 helper.setText(R.id.tv_num, item.getNum());
                 helper.setText(R.id.tv_time, item.getTime());
                 helper.setText(R.id.tv_score, item.getScore());
+                helper.setText(R.id.tv_chart,item.getChart());
 
 //              helper.getView(R.id.tv_title).setOnClickListener(l)
             }
