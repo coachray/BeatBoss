@@ -10,6 +10,8 @@ import android.content.Context;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.Window;
+import android.view.animation.AlphaAnimation;
+import android.view.animation.AnimationSet;
 import android.widget.AdapterView;
 import android.widget.AdapterView.OnItemClickListener;
 import android.widget.BaseAdapter;
@@ -91,8 +93,20 @@ public class StartGame extends AppCompatActivity implements View.OnClickListener
                 if (!finishGame){
                     String countNametext=String.format("已用步数：%d步",mGame.NumOfGuesses+1);
                     countNum.setText(countNametext);
-//                    MyAdapter ad = (MyAdapter) parent.getAdapter();
-//                    ad.setNotifyDataChange(position,result);
+
+                 //创建淡入淡出动画
+                //创建一个AnimationSet对象，参数为Boolean型，
+                //true表示使用Animation的interpolator，false则是使用自己的
+                AnimationSet animationSet = new AnimationSet(true);
+                //创建一个AlphaAnimation对象，参数从完全的透明度，到完全的不透明
+                AlphaAnimation alphaAnimation = new AlphaAnimation(1, 0);
+                //设置动画执行的时间
+                alphaAnimation.setDuration(180);
+                //将alphaAnimation对象添加到AnimationSet当中
+                animationSet.addAnimation(alphaAnimation);
+                //使用ImageView的startAnimation方法执行动画
+                view.startAnimation(animationSet);
+
                 }
 
                 //每点击一次扣除1分
