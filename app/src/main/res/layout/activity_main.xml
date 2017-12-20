@@ -1,9 +1,175 @@
 <?xml version="1.0" encoding="utf-8"?>
-<android.support.constraint.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
-    android:layout_width="match_parent"
-    android:layout_height="match_parent"
+    android:layout_width="fill_parent"
+    android:layout_height="fill_parent"
+    android:orientation="vertical"
     tools:context="com.wiseking.ray.beatboss.MainActivity">
 
-</android.support.constraint.ConstraintLayout>
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginLeft="8dp"
+        android:layout_marginRight="8dp"
+        android:layout_marginTop="4dp"
+        android:gravity="center"
+        android:background="@drawable/boder">
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginEnd="8dp"
+        android:layout_marginStart="8dp"
+        android:text="游戏简介"
+        android:textColor="@android:color/holo_green_dark"
+        android:textSize="26sp"  />
+
+    </LinearLayout>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginLeft="8dp"
+        android:layout_marginRight="8dp"
+        android:layout_marginTop="4dp"
+        android:gravity="center"
+        android:orientation="vertical"
+        android:background="@drawable/boder">
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="         本游戏为智力游戏，在7*7的格子中有三位“老板”的名字，每位“老板”的名字占三个格子，玩家通过点击格子来找出所有的“老板”的位置，用的步数和时间最短的综合评分越高，成绩计入历史成绩，可随时查看。支持自定义“老板”的名字哦，所以心情不好的时候请尽情地"
+            android:textColor="@android:color/holo_green_dark"
+            android:textSize="22sp" />
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Beat Your Boss!"
+            android:textColor="@android:color/holo_blue_dark"
+            android:textSize="26sp" />
+
+    </LinearLayout>
+
+
+
+        <ImageView
+            android:layout_width="fill_parent"
+            android:layout_height="3dp"
+            android:layout_marginLeft="8dp"
+            android:layout_marginRight="8dp"
+            android:layout_marginTop="4dp"
+            android:gravity="center"
+            android:background="@drawable/boder"
+            />
+
+
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginLeft="8dp"
+        android:layout_marginRight="8dp"
+        android:layout_marginTop="4dp"
+        android:gravity="center"
+        android:orientation="vertical"
+        android:background="@drawable/boder">
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginEnd="8dp"
+            android:layout_marginStart="12dp"
+            android:text="请输入“老板”的姓名："
+            android:textColor="@android:color/holo_green_dark"
+            android:textSize="22sp"  />
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginLeft="8dp"
+        android:layout_marginRight="8dp"
+        android:layout_marginTop="4dp"
+        >
+
+        <EditText
+            android:id="@+id/boss1"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1.0"
+            android:textColor="#2C3CD2"
+            android:textSize="20sp"
+            android:gravity="center"
+            android:singleLine="true"
+            android:background="@drawable/boder"
+            android:text="铁公鸡"/>
+
+        <EditText
+            android:id="@+id/boss2"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1.0"
+            android:textColor="#2C3CD2"
+            android:textSize="20sp"
+            android:gravity="center"
+            android:background="@drawable/boder"
+            android:text="坏脾气"/>
+
+        <EditText
+            android:id="@+id/boss3"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1.0"
+            android:textColor="#2C3CD2"
+            android:textSize="20sp"
+            android:gravity="center"
+            android:background="@drawable/boder"
+            android:text="黄世仁"/>
+
+    </LinearLayout>
+
+    </LinearLayout>
+
+    <ImageView
+        android:layout_width="fill_parent"
+        android:layout_height="3dp"
+        android:layout_marginLeft="8dp"
+        android:layout_marginRight="8dp"
+        android:layout_marginTop="4dp"
+        android:gravity="center"
+        android:background="@drawable/boder"
+        />
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginLeft="8dp"
+        android:layout_marginRight="8dp"
+        android:layout_marginTop="4dp"
+        android:gravity="center"
+        android:background="@drawable/boder">
+
+    <Button
+        android:id="@+id/startGame"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginRight="8dp"
+        android:textColor="#2C3CD2"
+        android:textSize="20sp"
+        android:background="@drawable/boder"
+        android:text="开始游戏"         />
+
+        <Button
+            android:id="@+id/checkHistory"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="8dp"
+            android:textColor="#2C3CD2"
+            android:textSize="20sp"
+            android:background="@drawable/boder"
+            android:text="历史记录"         />
+
+    </LinearLayout>
+
+</LinearLayout>
