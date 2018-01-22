@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="fill_parent"
+    android:layout_height="fill_parent"
+    android:orientation="vertical"
+    tools:context="com.wiseking.ray.beatboss.MainActivity">
+
+    <include layout="@layout/toolbar_layout"></include>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginLeft="8dp"
+        android:layout_marginRight="8dp"
+        android:layout_marginTop="30dp"
+        android:gravity="center"
+        android:orientation="vertical"
+        android:background="@drawable/boder">
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="    本游戏由智宸工作室coachray制作，有bug可以联系我，欢迎批评指正！\n
+    QQ：68105997\n
+    Email：guobj2000@163.com!"
+            android:textColor="@android:color/holo_blue_dark"
+            android:textSize="22sp" />
+
+    </LinearLayout>
+</LinearLayout>

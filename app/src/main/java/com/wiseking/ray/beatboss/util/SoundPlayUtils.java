@@ -13,7 +13,7 @@ import com.wiseking.ray.beatboss.R;
 public class SoundPlayUtils {
     // SoundPool对象
     public static SoundPool mSoundPlayer = new SoundPool(10,
-            AudioManager.STREAM_SYSTEM, 5);
+            AudioManager.STREAM_MUSIC, 5);
     public static SoundPlayUtils soundPlayUtils;
     // 上下文
     static Context mContext;
@@ -49,7 +49,11 @@ public class SoundPlayUtils {
      * @param soundID
      */
     public static void play(int soundID) {
-        mSoundPlayer.play(soundID, 1, 1, 0, 0, 1);
+        AudioManager mAudioManager = (AudioManager)mContext.getSystemService(Context.AUDIO_SERVICE);
+        int currentVolume = mAudioManager.getStreamVolume(AudioManager.STREAM_MUSIC);
+        int maxVolume = mAudioManager.getStreamMaxVolume(AudioManager.STREAM_MUSIC);
+        float volume = ((float)currentVolume)/maxVolume;
+        mSoundPlayer.play(soundID, volume, volume, 0, 0, 1);
     }
 
 }

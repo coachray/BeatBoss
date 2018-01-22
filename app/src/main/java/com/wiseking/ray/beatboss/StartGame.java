@@ -1,12 +1,17 @@
 package com.wiseking.ray.beatboss;
 
+import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.SharedPreferences;
+import android.media.AudioManager;
 import android.os.Handler;
 import android.os.Message;
-import android.support.v7.app.ActionBar;
+import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.content.Context;
+import android.view.Menu;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.Window;
@@ -42,22 +47,85 @@ public class StartGame extends AppCompatActivity implements View.OnClickListener
     private int mFinalScore=100;       //设定初始分数为100
     String mDate="";                    //设定初设时间为空
     private MyThread myThread;          //声明一个线程类实例
+    private boolean isMute=false;    //设定是不是静音
     private GridView gv;
     private TextView countNum;
     private TextView countTime;
     private TextView leftNum;
     private TextView finalScore;
     private MyAdapter myAdapter;
+    private TextView titleText;
+    private MenuItem menuItem=null;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.layout_grid);
 
-        ActionBar actionBar=getSupportActionBar();
-        if (actionBar!=null){
-            actionBar.hide();
-        }
+       /* //读取设定值
+        SharedPreferences settings = getSharedPreferences("setting", 0);
+//        isRemind= settings.getBoolean("isremind",false);
+        isMute= settings.getBoolean("ismute",false);
+//        selectedLanguage = settings.getInt("selectedLanguage", 0);*/
+
+        //初始化音效类
+//        SoundPlayUtils.init(this);
+
+        android.support.v7.widget.Toolbar toolbar = (android.support.v7.widget.Toolbar) findViewById(R.id.toolbar);
+        setSupportActionBar(toolbar);
+
+        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+        toolbar.setNavigationOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                if (!isMute){                   //不静音就播放音效
+                    SoundPlayUtils.play(1);  //播放按键音效
+                }
+                onBackPressed();
+            }
+        });
+
+        setTitle("");
+
+        titleText = (TextView) findViewById(R.id.titleText);
+        titleText.setText("游戏进行中……");
+
+        toolbar.setOnMenuItemClickListener(new android.support.v7.widget.Toolbar.OnMenuItemClickListener() {
+            @Override
+            public boolean onMenuItemClick(MenuItem item) {
+                switch (item.getItemId()) {
+                    case R.id.action_share:
+                        if (!isMute){                   //不静音就播放音效
+                            SoundPlayUtils.play(1);  //播放按键音效
+                        }
+                        Toast.makeText(StartGame.this,
+                                "share !", Toast.LENGTH_SHORT).show();
+                        break;
+                    case R.id.action_play:
+                        if (!isMute){                   //不静音就播放音效
+                            SoundPlayUtils.play(1);  //播放按键音效
+                        }
+                        if (!finishGame){
+                            if (!myThread.pause)
+                            {
+                                item.setIcon(R.mipmap.ic_play);
+                                myThread.pause=true;
+                                titleText.setText("游戏暂停中……");
+                            }else {
+                                    item.setIcon(R.mipmap.ic_pause);
+                                    myThread.pause=false;
+                                    titleText.setText("游戏进行中……");
+                            }
+                        }else
+                        {
+                            Toast.makeText(StartGame.this,"游戏都结束了，就不要再按暂停了吧！",Toast.LENGTH_SHORT).show();
+                        }
+                        break;
+                }
+                return true;
+            }
+        });
+
         gv = (GridView)findViewById(R.id.GridView1);
         Button restartGame=(Button) findViewById(R.id.restartGame);
         Button restartPosition=(Button)findViewById(R.id.resetPosition);
@@ -75,8 +143,9 @@ public class StartGame extends AppCompatActivity implements View.OnClickListener
         myAdapter=new MyAdapter(this);
         gv.setAdapter(myAdapter);
 
-        //初始化音效类
-        SoundPlayUtils.init(this);
+        //设置是不是静音
+        isMute=mGame.isMute;
+        //按钮注册监听
         restartGame.setOnClickListener(this);
         restartPosition.setOnClickListener(this);
 
@@ -85,13 +154,27 @@ public class StartGame extends AppCompatActivity implements View.OnClickListener
         //注册GridView监听事件
         gv.setOnItemClickListener(new OnItemClickListener()
         {
+            int numOfClickAfterFinish=0;
             public void onItemClick(AdapterView<?> parent, View v, int position, long id)
             {
+                //游戏结束点击无效
+                if (finishGame){
+                    if (numOfClickAfterFinish==0){
+                        Toast.makeText(StartGame.this, "敬告：游戏结束后再次点击无效哦~~", Toast.LENGTH_SHORT).show();
+                    }else if (numOfClickAfterFinish==1){
+                        showAlertDialog();
+                    }
+                    numOfClickAfterFinish++;
+                    return;
+                }
                 DrawTextImageView view= (DrawTextImageView) v;  //转换为DrawTextImageView
                 String result = mGame.checkUserInput(position); //获得结果
+                if (myThread.pause){                           //如果暂停就不再计数
+                    return;
+                }
                 //如果游戏未结束就更新步数
                 if (!finishGame){
-                    String countNametext=String.format("已用步数：%d步",mGame.NumOfGuesses+1);
+                    String countNametext=String.format("已用步数:%d步",mGame.NumOfGuesses+1);
                     countNum.setText(countNametext);
 
                  //创建淡入淡出动画
@@ -114,7 +197,7 @@ public class StartGame extends AppCompatActivity implements View.OnClickListener
 
 //                String result = mGame.checkUserInput(position);
                 if (result.equals("hit") || result.equals("kill")){
-                    String leftNametext="还剩未中：";
+                    String leftNametext="还剩未中:";
                     StringBuilder builder1=new StringBuilder(leftNametext);
                     int mPosition= mGame.dotComToStore.locNum;             //取得命中的名字的编号
                     char hanzi=mGame.dotComToStore.name.charAt(mPosition); //取得该汉字
@@ -125,10 +208,14 @@ public class StartGame extends AppCompatActivity implements View.OnClickListener
                     if (result.equals("hit")){                                   //如果命中
                         if (mGame.dotComToStore.hitAgain){                     //如果是重复点击
                             Toast.makeText(StartGame.this, "哦噢~~“"+hanzi+"”这个字你已经打过了哦，重复点击会扣分的哦~", Toast.LENGTH_SHORT).show();
-                            SoundPlayUtils.play(2);  //播放重复音效
+                            if (!isMute){
+                                SoundPlayUtils.play(2);  //播放重复音效
+                            }
                         }else {
 //                            Toast.makeText(StartGame.this, "恭喜你击中了"+"“"+hanzi+"”字，棒棒哒~~", Toast.LENGTH_SHORT).show();
-                            SoundPlayUtils.play(3);  //播放命中音效
+                            if (!isMute) {
+                                SoundPlayUtils.play(3);  //播放命中音效
+                            }
                             //更新块数
                             totalblocks--;
                             builder1.append(totalblocks).append("块");
@@ -141,18 +228,25 @@ public class StartGame extends AppCompatActivity implements View.OnClickListener
                         String mName= mGame.dotComToStore.name;              //取得老板的姓名
                         if (mGame.dotComToStore.hitAgain){                  //如果是重复点击
                             Toast.makeText(StartGame.this, "哦噢~~“"+mName+"”这个“老板”已经被你成功消灭了哦，重复点击会扣分的哦~", Toast.LENGTH_SHORT).show();
-                            SoundPlayUtils.play(2);  //播放重复音效
+                            if (!isMute) {
+                                SoundPlayUtils.play(2);  //播放重复音效
+                            }
                         }else {
                             //更新块数
                             totalblocks--;
                             builder1.append(totalblocks).append("块");
                             leftNum.setText(builder1);
-                            SoundPlayUtils.play(4);  //播放消灭音效
+                            if (!isMute) {
+                                SoundPlayUtils.play(4);  //播放消灭音效
+                            }
                             //每命中一次增加5分
                             mFinalScore+=5;
                             if (mGame.dotComHit==3){           //如果全部消灭
+                                titleText.setText("游戏结束");
                                 Toast.makeText(StartGame.this, "恭喜你成功消灭了所有“老板”，过关啦~~", Toast.LENGTH_SHORT).show();
-                                SoundPlayUtils.play(5);  //播放胜利音效
+                                if (!isMute) {
+                                    SoundPlayUtils.play(5);  //播放胜利音效
+                                }
                                 myThread.stop=true;              //设置定时器停止标志
                                 myThread=null;                   //线程指向空
                                 finishGame = true;              //game 完成
@@ -167,26 +261,16 @@ public class StartGame extends AppCompatActivity implements View.OnClickListener
                                 score.setTime(mtime);                  //存储时间到数据库
                                 score.setScore(mFinalScore-1);        //存储成绩到数据库时成绩多记一分，故减去1
                                 score.save();                          //执行保存
-
-                                /*if (score.save()) {
-                                    Toast.makeText(StartGame.this, "存储成功", Toast.LENGTH_SHORT).show();
-                                } else {
-                                    Toast.makeText(StartGame.this, "存储失败", Toast.LENGTH_SHORT).show();
-                                }
-
-//                                DataHistory firstDest = DataSupport.findFirst(DataHistory.class);
-                                Log.d("GML", "数据库保存成功 ");*/
-
                             }
                             else {
                                 Toast.makeText(StartGame.this, "恭喜你成功消灭了"+"“"+mName+"”这个“老板”，棒棒哒~~", Toast.LENGTH_SHORT).show();
                             }
                         }
                     }
-
-
                 }else {
-                    SoundPlayUtils.play(2);  //播放未命中音效
+                    if (!isMute) {
+                        SoundPlayUtils.play(2);  //播放未命中音效
+                    }
                 }
 //                Toast.makeText(StartGame.this, result, Toast.LENGTH_SHORT).show();
             }
@@ -198,7 +282,9 @@ public class StartGame extends AppCompatActivity implements View.OnClickListener
     public void onClick(View view) {
         switch (view.getId()){
             case  R.id.restartGame :
-                SoundPlayUtils.play(1);  //播放按键音效
+                if (!isMute) {
+                    SoundPlayUtils.play(1);  //播放按键音效
+                }
                 //老板名字不变，位置重新布置,首先取得当前的名字
                 String name1 = null;
                 String name2 = null;
@@ -223,6 +309,11 @@ public class StartGame extends AppCompatActivity implements View.OnClickListener
                 myThread=new MyThread();
                 myThread.start();
 
+                //设置菜单中图片和标题文字
+                menuItem.setIcon(R.mipmap.ic_pause);
+                myThread.pause=false;
+                titleText.setText("游戏进行中……");
+
                 //重置未完成game的标志
                 finishGame=false;
                 //还剩的块数需要重置为9
@@ -233,13 +324,15 @@ public class StartGame extends AppCompatActivity implements View.OnClickListener
                 mDate="";
 
                 //更新TextView
-                countNum.setText("已用步数：0步");
-                leftNum.setText("还剩未中：9块");
-                countTime.setText("已用时间：0秒");
-                finalScore.setText("综合评分：100分");
+                countNum.setText("已用步数:0步");
+                leftNum.setText("还剩未中:9块");
+                countTime.setText("已用时间:0秒");
+                finalScore.setText("综合评分:100分");
                 break;
             case  R.id.resetPosition :
-                SoundPlayUtils.play(1);  //播放按键音效
+                if (!isMute) {
+                    SoundPlayUtils.play(1);  //播放按键音效
+                }
                 //利用Intent将游戏结束和最终结果传送到历史成绩页面
                 Intent intent1=new Intent(StartGame.this,CheckHistory.class);
                 intent1.putExtra("Extra_finishGame", finishGame);
@@ -271,24 +364,58 @@ public class StartGame extends AppCompatActivity implements View.OnClickListener
     class MyThread extends Thread {
 
         public boolean stop=false;
+        public boolean pause=false;
 
         @Override
         public void run() {
             // TODO Auto-generated method stub
             while (!stop) {
-                try {
-                    Thread.sleep(1000);
-                    Message msg = new Message();
-                    msg.what = 1;
-                    handler.sendMessage(msg);
+                if (!pause){
+                    try {
+                        Thread.sleep(1000);
+                        Message msg = new Message();
+                        msg.what = 1;
+                        handler.sendMessage(msg);
 //                    System.out.println("send...");
-                } catch (Exception e) {
-                    // TODO Auto-generated catch block
-                    e.printStackTrace();
+                    } catch (Exception e) {
+                        // TODO Auto-generated catch block
+                        e.printStackTrace();
 //                    System.out.println("thread error...");
+                    }
                 }
+
             }
         }
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+        //读取设定值
+        SharedPreferences settings = getSharedPreferences("setting", 0);
+//        isRemind= settings.getBoolean("isremind",false);
+        isMute= settings.getBoolean("ismute",false);
+//        selectedLanguage = settings.getInt("selectedLanguage", 0);
+
+    }
+
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        getMenuInflater().inflate(R.menu.menu, menu);
+        menuItem = menu.findItem(R.id.action_play);
+        return true;
+    }
+
+    public void showAlertDialog() {
+        AlertDialog dialog = new AlertDialog.Builder(StartGame.this)
+                .setTitle("警告")
+                .setMessage("都说了不要再点了，再点就不理你了")
+                .setPositiveButton("确定", new DialogInterface.OnClickListener(){
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                        dialog.dismiss();
+                    }
+                }).show();
     }
 
 }
@@ -349,7 +476,6 @@ class MyAdapter extends BaseAdapter{
             imageView = new DrawTextImageView(context);
             imageView.setLayoutParams(new GridView.LayoutParams(145, 145));//设置ImageView对象布局
             imageView.setAdjustViewBounds(false);//设置边界对齐
-//            imageView.setBackgroundResource(R.drawable.myselector);        //加上背景边框
             imageView.setScaleType(ImageView.ScaleType.CENTER_CROP);//设置刻度的类型
             imageView.setPadding(7, 8, 7, 8);//设置间距
         }
@@ -357,15 +483,6 @@ class MyAdapter extends BaseAdapter{
             imageView = (DrawTextImageView) convertView;
         }
         imageView.setImageResource(imgs[position]);//为ImageView设置图片资源
-        /*if (selectPic==position){
-            imageView.setBackgroundResource(R.drawable.boderyes);        //加上背景边框
-        }else {
-            imageView.setBackgroundResource(R.drawable.boderno);        //去掉背景边框
-        }
-        if (result.equals("hit") || result.equals("kill")) {
-
-            imageView.setImageResource(R.mipmap.pic_bomb);    //设定图片为爆炸图标
-        }*/
         return imageView;
     }
 }

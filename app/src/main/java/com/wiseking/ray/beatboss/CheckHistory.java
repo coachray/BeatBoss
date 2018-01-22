@@ -1,28 +1,27 @@
 package com.wiseking.ray.beatboss;
 
+import android.content.Context;
 import android.content.Intent;
-import android.support.v7.app.ActionBar;
+import android.content.DialogInterface;
+import android.content.SharedPreferences;
+import android.media.AudioManager;
+import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
-import android.content.Context;
 import android.util.Log;
+import android.view.Menu;
+import android.view.MenuItem;
 import android.view.View;
-import android.view.ViewGroup;
-import android.widget.AdapterView;
-import android.widget.AdapterView.OnItemClickListener;
 import android.widget.TextView;
 import android.widget.Toast;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Collections;
-import java.util.List;
 
 import android.widget.ListView;
-
-import com.wiseking.ray.beatboss.R;
 import com.wiseking.ray.beatboss.db.DataHistory;
 import com.wiseking.ray.beatboss.util.CommonAdapter;
 import com.wiseking.ray.beatboss.util.Score;
+import com.wiseking.ray.beatboss.util.SoundPlayUtils;
 import com.wiseking.ray.beatboss.util.ViewHolder;
 
 import org.litepal.crud.DataSupport;
@@ -37,16 +36,62 @@ public class CheckHistory extends AppCompatActivity {
     private ArrayList<DataHistory> mDatas=new ArrayList<>();  //用于从数据库中取得所有数据
     private ArrayList<Score> mScore=new ArrayList<>();        //用于列表的适配器
     int mPosition=-1;       //没有进行游戏则默认位置设置为-1
+    private boolean isMute=false;  //是否静音
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.layout_history);
 
-        ActionBar actionBar=getSupportActionBar();
-        if (actionBar!=null){
-            actionBar.hide();
-        }
+        //读取设定值
+        SharedPreferences settings = getSharedPreferences("setting", 0);
+//        isRemind= settings.getBoolean("isremind",false);
+        isMute= settings.getBoolean("ismute",false);
+//        selectedLanguage = settings.getInt("selectedLanguage", 0);
+
+        android.support.v7.widget.Toolbar toolbar = (android.support.v7.widget.Toolbar) findViewById(R.id.toolbar);
+        setSupportActionBar(toolbar);
+
+        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+        toolbar.setNavigationOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+
+                if (!isMute){                   //不静音就播放音效
+                    SoundPlayUtils.play(1);  //播放按键音效
+                }
+                onBackPressed();
+            }
+        });
+
+        setTitle("");
+        TextView titleText = (TextView) findViewById(R.id.titleText);
+        titleText.setText("历史记录");
+
+        toolbar.setOnMenuItemClickListener(new android.support.v7.widget.Toolbar.OnMenuItemClickListener() {
+            @Override
+            public boolean onMenuItemClick(MenuItem item) {
+                switch (item.getItemId()) {
+                    case R.id.action_share:
+                        if (!isMute){                   //不静音就播放音效
+                            SoundPlayUtils.play(1);  //播放按键音效
+                        }
+                        Toast.makeText(CheckHistory.this,
+                                "share !", Toast.LENGTH_SHORT).show();
+                        break;
+                    case R.id.action_clear:
+                        if (!isMute){                   //不静音就播放音效
+                            SoundPlayUtils.play(1);  //播放按键音效
+                        }
+                        showDeleteAlertDialog();
+                        break;
+                }
+                return true;
+            }
+        });
+
+
+
 
         //读取数据库的历史成绩用来显示
         int numOfScore = DataSupport.count(DataHistory.class); //保存有多少历史成绩
@@ -81,7 +126,7 @@ public class CheckHistory extends AppCompatActivity {
             }
         }
 
-        Log.d("GML","mPostion at onCreateout "+mPosition);
+//        Log.d("GML","mPostion at onCreateout "+mPosition);
 
         mListView = (ListView) findViewById(R.id.LV_history);
 
@@ -116,47 +161,52 @@ public class CheckHistory extends AppCompatActivity {
             }
         },500 );
 
-
-        /*mListView.setOnItemClickListener(new OnItemClickListener() {
-            @Override
-            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-                int firstVisiblePosition=mListView.getFirstVisiblePosition();
-                Log.d("GML","firstPostion at click "+firstVisiblePosition);
-                Log.d("GML","lastPosition at click "+mListView.getLastVisiblePosition());
-                Log.d("GML","TotalchildCoung at click "+mListView.getCount());
-                int childCount=mListView.getChildCount();
-                mListView.requestFocusFromTouch();//获取焦点
-                mListView.setSelection(mListView.getHeaderViewsCount() + mPosition-childCount+2);//mPosition是你需要定位的位置
-                view = mListView.getChildAt(childCount-1);
-                if (view!=null){
-                    view.setBackgroundResource(R.drawable.boderyes);
-//                                mPosition=-1;
-                    Log.d("GML","index2 at post");
-                }else {Log.d("GML","index2 at post failed");}
-
-            }
-        });*/
     }
 
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        getMenuInflater().inflate(R.menu.toolbar1, menu);
+        return true;
+    }
 
-    /**
-     * 通过位置找到ListView中的某个item的View
-     * @param pos
-     * @param listView
-     * @return
-     */
-    /*public View getViewByPosition(int pos, ListView listView) {
-        int firstListItemPosition = listView.getFirstVisiblePosition();
-        int lastListItemPosition = firstListItemPosition
-                + listView.getChildCount() - 1;
-
-        if (pos < firstListItemPosition || pos > lastListItemPosition) {
-            return listView.getAdapter().getView(pos, null, listView);
-        } else {
-            final int childIndex = pos - firstListItemPosition;
-            return listView.getChildAt(childIndex);
-        }
-    }*/
-
+    public void showDeleteAlertDialog() {
+        AlertDialog dialog = new AlertDialog.Builder(CheckHistory.this)
+                .setTitle("温馨提醒")
+                .setMessage("       该操作将删除所有历史记录，确定要继续吗？")
+                .setPositiveButton("确定", new DialogInterface.OnClickListener(){
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                        if (!isMute){                   //不静音就播放音效
+                            SoundPlayUtils.play(1);  //播放按键音效
+                        }
+                        DataSupport.deleteAll(DataHistory.class);
+                        mScore.clear();
+                        mListView.setAdapter(new CommonAdapter<Score>(CheckHistory.this, mScore, R.layout.item, mPosition)
+                        {
+                            @Override
+                            public void convert(ViewHolder helper, Score item)
+                            {
+                                helper.setText(R.id.tv_date, item.getDate());
+                                helper.setText(R.id.tv_num, item.getNum());
+                                helper.setText(R.id.tv_time, item.getTime());
+                                helper.setText(R.id.tv_score, item.getScore());
+                                helper.setText(R.id.tv_chart,item.getChart());
+                            }
+                        });
+                        dialog.dismiss();
+                        Toast.makeText(CheckHistory.this,
+                                "所有历史记录已删除 !", Toast.LENGTH_SHORT).show();
+                    }
+                })
+                .setNegativeButton("取消", new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                        if (!isMute){                   //不静音就播放音效
+                            SoundPlayUtils.play(1);  //播放按键音效
+                        }
+                        dialog.dismiss();
+                    }
+                }).show();
+    }
 
 }

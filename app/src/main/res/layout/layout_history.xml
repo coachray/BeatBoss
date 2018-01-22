@@ -4,6 +4,9 @@
     android:layout_height="match_parent"
     android:orientation="vertical"  >
 
+    <include layout="@layout/toolbar_layout"></include>
+
+    <!--
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
@@ -23,6 +26,7 @@
             android:textSize="26sp"  />
 
     </LinearLayout>
+    -->
 
     <LinearLayout
         android:layout_width="match_parent"
@@ -90,137 +94,6 @@
 
     </LinearLayout>
 
-    <!--不再使用TextView控件显示
-    <TextView
-        android:id="@+id/score1"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:textColor="@android:color/holo_blue_dark"
-        android:textSize="18sp"
-        android:paddingLeft="50dp"
-        android:layout_marginLeft="8dp"
-        android:layout_marginRight="8dp"
-        android:layout_marginTop="4dp"
-        android:background="@drawable/boder1"
-        android:text="1、"/>
-
-    <TextView
-        android:id="@+id/score2"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:textColor="@android:color/holo_blue_dark"
-        android:textSize="18sp"
-        android:paddingLeft="50dp"
-        android:layout_marginLeft="8dp"
-        android:layout_marginRight="8dp"
-        android:layout_marginTop="4dp"
-        android:background="@drawable/boder1"
-        android:text="2、"/>
-
-    <TextView
-        android:id="@+id/score3"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:textColor="@android:color/holo_blue_dark"
-        android:textSize="18sp"
-        android:paddingLeft="50dp"
-        android:layout_marginLeft="8dp"
-        android:layout_marginRight="8dp"
-        android:layout_marginTop="4dp"
-        android:background="@drawable/boder1"
-        android:text="3、"/>
-
-    <TextView
-        android:id="@+id/score4"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:textColor="@android:color/holo_blue_dark"
-        android:textSize="18sp"
-        android:paddingLeft="50dp"
-        android:layout_marginLeft="8dp"
-        android:layout_marginRight="8dp"
-        android:layout_marginTop="4dp"
-        android:background="@drawable/boder1"
-        android:text="4、"/>
-
-    <TextView
-        android:id="@+id/score5"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:textColor="@android:color/holo_blue_dark"
-        android:textSize="18sp"
-        android:paddingLeft="50dp"
-        android:layout_marginLeft="8dp"
-        android:layout_marginRight="8dp"
-        android:layout_marginTop="4dp"
-        android:background="@drawable/boder1"
-        android:text="5、"/>
-
-    <TextView
-        android:id="@+id/score6"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:textColor="@android:color/holo_blue_dark"
-        android:textSize="18sp"
-        android:paddingLeft="50dp"
-        android:layout_marginLeft="8dp"
-        android:layout_marginRight="8dp"
-        android:layout_marginTop="4dp"
-        android:background="@drawable/boder1"
-        android:text="6、"/>
-
-    <TextView
-        android:id="@+id/score7"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:textColor="@android:color/holo_blue_dark"
-        android:textSize="18sp"
-        android:paddingLeft="50dp"
-        android:layout_marginLeft="8dp"
-        android:layout_marginRight="8dp"
-        android:layout_marginTop="4dp"
-        android:background="@drawable/boder1"
-        android:text="7、"/>
-
-    <TextView
-        android:id="@+id/score8"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:textColor="@android:color/holo_blue_dark"
-        android:textSize="18sp"
-        android:paddingLeft="50dp"
-        android:layout_marginLeft="8dp"
-        android:layout_marginRight="8dp"
-        android:layout_marginTop="4dp"
-        android:background="@drawable/boder1"
-        android:text="8、"/>
-
-    <TextView
-        android:id="@+id/score9"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:textColor="@android:color/holo_blue_dark"
-        android:textSize="18sp"
-        android:paddingLeft="50dp"
-        android:layout_marginLeft="8dp"
-        android:layout_marginRight="8dp"
-        android:layout_marginTop="4dp"
-        android:background="@drawable/boder1"
-        android:text="9、"/>
-
-    <TextView
-        android:id="@+id/score10"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:textColor="@android:color/holo_blue_dark"
-        android:textSize="18sp"
-        android:paddingLeft="50dp"
-        android:layout_marginLeft="8dp"
-        android:layout_marginRight="8dp"
-        android:layout_marginTop="4dp"
-        android:background="@drawable/boder1"
-        android:text="10、"/>
-        -->
     <!--改为使用ListView显示历史成绩-->
 
     <ListView
