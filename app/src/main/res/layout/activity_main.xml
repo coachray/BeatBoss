@@ -133,7 +133,7 @@
                 android:textSize="20sp"
                 android:gravity="center"
                 android:background="@drawable/boder"
-                android:text="黄世仁"/>
+                android:text="智商低"/>
 
         </LinearLayout>
 

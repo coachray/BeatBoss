@@ -12,6 +12,7 @@ import android.view.View;
 import android.widget.TableRow;
 import android.widget.TextView;
 
+import com.wiseking.ray.beatboss.util.MediaPlayUtils;
 import com.wiseking.ray.beatboss.util.SoundPlayUtils;
 
 /**
@@ -50,6 +51,25 @@ public class HelpActivity extends AppCompatActivity{
         TextView titleText = (TextView) findViewById(R.id.titleText);
         titleText.setText("帮助");
 
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+        //读取设定值
+        SharedPreferences settings = getSharedPreferences("setting", 0);
+        isMute= settings.getBoolean("ismute",false);
+        //通过AudioManager来设置了系统声音的静音,进入本游戏直接将系统声音静音
+        AudioManager mAudioManager = (AudioManager)getSystemService(Context.AUDIO_SERVICE);
+        // 设定调整音量为媒体音量,当暂停播放的时候调整音量就不会再默认调整铃声音量了，
+        setVolumeControlStream(AudioManager.STREAM_MUSIC);
+        mAudioManager.setStreamMute(AudioManager.STREAM_SYSTEM,true);
+        if (isMute)
+        {
+            MediaPlayUtils.pause();
+        }else {
+            MediaPlayUtils.play();
+        }
     }
 
 }

@@ -2,11 +2,13 @@ package com.wiseking.ray.beatboss;
 
 import android.app.AlarmManager;
 import android.app.PendingIntent;
+import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager;
+import android.media.AudioManager;
 import android.os.Bundle;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
@@ -19,6 +21,7 @@ import android.widget.Toast;
 
 import com.wiseking.ray.beatboss.util.MediaPlayUtils;
 import com.wiseking.ray.beatboss.util.SoundPlayUtils;
+import com.wiseking.ray.beatboss.util.ToastHelper;
 
 import java.util.Calendar;
 import java.util.TimeZone;
@@ -79,6 +82,7 @@ public class SettingActivity extends AppCompatActivity implements TableRow.OnCli
         TableRow myLanguage=(TableRow) findViewById(R.id.more_page_language);
         TableRow myRefresh=(TableRow) findViewById(R.id.more_page_refresh);
         TableRow myAbout=(TableRow) findViewById(R.id.more_page_about);
+        TableRow myrobot=(TableRow) findViewById(R.id.more_page_robot);
         TableRow myLogin=(TableRow) findViewById(R.id.more_page_login);
         TableRow myNetwork=(TableRow) findViewById(R.id.more_page_network);
 
@@ -116,7 +120,7 @@ public class SettingActivity extends AppCompatActivity implements TableRow.OnCli
                 isMute=isChecked;
 
                 if (isMute){
-                    MediaPlayUtils.stop();
+                    MediaPlayUtils.pause();
                 }else {
                     MediaPlayUtils.play();
                 }
@@ -133,8 +137,28 @@ public class SettingActivity extends AppCompatActivity implements TableRow.OnCli
         myLanguage.setOnClickListener(this);
         myRefresh.setOnClickListener(this);
         myAbout.setOnClickListener(this);
+        myrobot.setOnClickListener(this);
         myLogin.setOnClickListener(this);
         myNetwork.setOnClickListener(this);
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+        //读取设定值
+        SharedPreferences settings = getSharedPreferences("setting", 0);
+        isMute= settings.getBoolean("ismute",false);
+        //通过AudioManager来设置了系统声音的静音,进入本游戏直接将系统声音静音
+        AudioManager mAudioManager = (AudioManager)getSystemService(Context.AUDIO_SERVICE);
+        // 设定调整音量为媒体音量,当暂停播放的时候调整音量就不会再默认调整铃声音量了，
+        setVolumeControlStream(AudioManager.STREAM_MUSIC);
+        mAudioManager.setStreamMute(AudioManager.STREAM_SYSTEM,true);
+        if (isMute)
+        {
+            MediaPlayUtils.pause();
+        }else {
+            MediaPlayUtils.play();
+        }
     }
 
     @Override
@@ -159,6 +183,13 @@ public class SettingActivity extends AppCompatActivity implements TableRow.OnCli
                 }
                 Intent intent1=new Intent(SettingActivity.this,AboutActivity.class);
                 startActivity(intent1);
+                break;
+            case R.id.more_page_robot:
+                if (!isMute){                   //不静音就播放音效
+                    SoundPlayUtils.play(1);  //播放按键音效
+                }
+                Intent intent2=new Intent(SettingActivity.this,ChatActivity.class);
+                startActivity(intent2);
                 break;
 
         }
@@ -277,7 +308,7 @@ public class SettingActivity extends AppCompatActivity implements TableRow.OnCli
          * 第三个参数是重复周期，也就是下次提醒的间隔 毫秒值 我这里是一天后提醒
          */
         am.setRepeating(AlarmManager.RTC_WAKEUP, mCalendar.getTimeInMillis(), (1000 * 60 * 60 * 24), pi);
-       Toast.makeText(SettingActivity.this,"提醒通知功能开启成功，你会在每天12:30收到通知! ", Toast.LENGTH_SHORT).show();
+       ToastHelper.showToast("提醒通知功能开启成功，你会在每天12:30收到通知! ");
 
     }
 
@@ -292,8 +323,7 @@ public class SettingActivity extends AppCompatActivity implements TableRow.OnCli
         AlarmManager am = (AlarmManager)getSystemService(ALARM_SERVICE);
         //取消警报
         am.cancel(pi);
-        Toast.makeText(this, "您关闭了提醒通知功能", Toast.LENGTH_SHORT).show();
-
+        ToastHelper.showToast("您关闭了提醒通知功能!");
     }
 
 

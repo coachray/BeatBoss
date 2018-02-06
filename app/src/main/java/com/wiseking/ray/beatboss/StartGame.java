@@ -29,7 +29,11 @@ import android.widget.Toast;
 import com.wiseking.ray.beatboss.db.DataHistory;
 import com.wiseking.ray.beatboss.util.DotComBush;
 import com.wiseking.ray.beatboss.util.DrawTextImageView;
+import com.wiseking.ray.beatboss.util.GetBitmapUtils;
+import com.wiseking.ray.beatboss.util.MediaPlayUtils;
 import com.wiseking.ray.beatboss.util.SoundPlayUtils;
+import com.wiseking.ray.beatboss.util.ToastHelper;
+
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.Locale;
@@ -98,8 +102,8 @@ public class StartGame extends AppCompatActivity implements View.OnClickListener
                         if (!isMute){                   //不静音就播放音效
                             SoundPlayUtils.play(1);  //播放按键音效
                         }
-                        Toast.makeText(StartGame.this,
-                                "share !", Toast.LENGTH_SHORT).show();
+                        GetBitmapUtils.screenShot(StartGame.this, true);
+                        GetBitmapUtils.showShare(StartGame.this,"游戏界面分享","我发现了一个小游戏，这是游戏界面。");
                         break;
                     case R.id.action_play:
                         if (!isMute){                   //不静音就播放音效
@@ -118,7 +122,7 @@ public class StartGame extends AppCompatActivity implements View.OnClickListener
                             }
                         }else
                         {
-                            Toast.makeText(StartGame.this,"游戏都结束了，就不要再按暂停了吧！",Toast.LENGTH_SHORT).show();
+                            ToastHelper.showToast("游戏都结束了，就不要再按暂停了吧！");
                         }
                         break;
                 }
@@ -160,7 +164,7 @@ public class StartGame extends AppCompatActivity implements View.OnClickListener
                 //游戏结束点击无效
                 if (finishGame){
                     if (numOfClickAfterFinish==0){
-                        Toast.makeText(StartGame.this, "敬告：游戏结束后再次点击无效哦~~", Toast.LENGTH_SHORT).show();
+                        ToastHelper.showToast("敬告：游戏结束后再次点击无效哦~~");
                     }else if (numOfClickAfterFinish==1){
                         showAlertDialog();
                     }
@@ -207,7 +211,7 @@ public class StartGame extends AppCompatActivity implements View.OnClickListener
                     view.setImageResource(R.mipmap.pic_bomb);    //设定图片为爆炸图标
                     if (result.equals("hit")){                                   //如果命中
                         if (mGame.dotComToStore.hitAgain){                     //如果是重复点击
-                            Toast.makeText(StartGame.this, "哦噢~~“"+hanzi+"”这个字你已经打过了哦，重复点击会扣分的哦~", Toast.LENGTH_SHORT).show();
+                            ToastHelper.showToast("哦噢~~“"+hanzi+"”这个字你已经打过了哦，重复点击会扣分的哦~");
                             if (!isMute){
                                 SoundPlayUtils.play(2);  //播放重复音效
                             }
@@ -227,7 +231,7 @@ public class StartGame extends AppCompatActivity implements View.OnClickListener
                     if (result.equals("kill")){                                // 如果全部命中
                         String mName= mGame.dotComToStore.name;              //取得老板的姓名
                         if (mGame.dotComToStore.hitAgain){                  //如果是重复点击
-                            Toast.makeText(StartGame.this, "哦噢~~“"+mName+"”这个“老板”已经被你成功消灭了哦，重复点击会扣分的哦~", Toast.LENGTH_SHORT).show();
+                            ToastHelper.showToast("哦噢~~“"+mName+"”这个“老板”已经被你成功消灭了哦，重复点击会扣分的哦~");
                             if (!isMute) {
                                 SoundPlayUtils.play(2);  //播放重复音效
                             }
@@ -243,7 +247,7 @@ public class StartGame extends AppCompatActivity implements View.OnClickListener
                             mFinalScore+=5;
                             if (mGame.dotComHit==3){           //如果全部消灭
                                 titleText.setText("游戏结束");
-                                Toast.makeText(StartGame.this, "恭喜你成功消灭了所有“老板”，过关啦~~", Toast.LENGTH_SHORT).show();
+                                ToastHelper.showToast("恭喜你成功消灭了所有“老板”，过关啦~~");
                                 if (!isMute) {
                                     SoundPlayUtils.play(5);  //播放胜利音效
                                 }
@@ -263,7 +267,7 @@ public class StartGame extends AppCompatActivity implements View.OnClickListener
                                 score.save();                          //执行保存
                             }
                             else {
-                                Toast.makeText(StartGame.this, "恭喜你成功消灭了"+"“"+mName+"”这个“老板”，棒棒哒~~", Toast.LENGTH_SHORT).show();
+                                ToastHelper.showToast("恭喜你成功消灭了"+"“"+mName+"”这个“老板”，棒棒哒~~");
                             }
                         }
                     }
@@ -396,7 +400,17 @@ public class StartGame extends AppCompatActivity implements View.OnClickListener
 //        isRemind= settings.getBoolean("isremind",false);
         isMute= settings.getBoolean("ismute",false);
 //        selectedLanguage = settings.getInt("selectedLanguage", 0);
-
+        //通过AudioManager来设置了系统声音的静音,进入本游戏直接将系统声音静音
+        AudioManager mAudioManager = (AudioManager)getSystemService(Context.AUDIO_SERVICE);
+        // 设定调整音量为媒体音量,当暂停播放的时候调整音量就不会再默认调整铃声音量了，
+        setVolumeControlStream(AudioManager.STREAM_MUSIC);
+        mAudioManager.setStreamMute(AudioManager.STREAM_SYSTEM,true);
+        if (isMute)
+        {
+            MediaPlayUtils.pause();
+        }else {
+            MediaPlayUtils.play();
+        }
     }
 
     @Override
@@ -417,7 +431,6 @@ public class StartGame extends AppCompatActivity implements View.OnClickListener
                     }
                 }).show();
     }
-
 }
 //自定义适配器
 class MyAdapter extends BaseAdapter{

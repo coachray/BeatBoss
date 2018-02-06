@@ -1,4 +1,39 @@
 apply plugin: 'com.android.application'
+// 添加插件
+apply plugin: "com.mob.sdk"
+
+// 在MobSDK的扩展中注册ShareSDK的相关信息
+MobSDK {
+    appKey "241b2943dcb3c"
+    appSecret "822737f1e35aebfeda38bff568f2f4e1"
+
+    ShareSDK {
+        devInfo {
+            Wechat {
+                appId "wx4868b35061f87885"
+                appSecret "64020361b8ec4c99936c0e3999a9f249"
+                sortId 1
+                bypassApproval true
+                shareByAppClient false
+            }
+            WechatMoments {
+                appId "wx4868b35061f87885"
+                appSecret "64020361b8ec4c99936c0e3999a9f249"
+                sortId 2
+                bypassApproval true
+                shareByAppClient false
+            }
+            SinaWeibo {
+                appKey "568898243"
+                appSecret "38a4f8204cc784f81f9f0daaf31e02e3"
+                callbackUri "http://www.sharesdk.cn"
+                sortId 3
+                shareByAppClient false
+                bypassApproval true
+            }
+        }
+    }
+}
 
 android {
     compileSdkVersion 26
@@ -27,6 +62,9 @@ dependencies {
     androidTestImplementation 'com.android.support.test.espresso:espresso-core:3.0.1'
     implementation 'org.litepal.android:core:1.6.0'
     implementation 'com.github.bumptech.glide:glide:3.7.0'
+    implementation 'com.google.code.gson:gson:2.8.1'//Gson解析依赖
 
 
 }
+
+

@@ -46,7 +46,9 @@ public class MediaPlayUtils {
             mMediaPlayer=MediaPlayer.create(mContext, R.raw.background);
             mMediaPlayer.setLooping(true);
         }
-        mMediaPlayer.start();
+
+        if (!mMediaPlayer.isPlaying())
+            mMediaPlayer.start();
 
     }
 
@@ -56,6 +58,11 @@ public class MediaPlayUtils {
             mMediaPlayer.release();
             mMediaPlayer=null;
         }
+    }
+
+    public static void pause(){
+        if (mMediaPlayer.isPlaying())
+        mMediaPlayer.pause();
     }
 
 }

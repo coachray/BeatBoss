@@ -12,10 +12,11 @@
         android:icon="@mipmap/ic_setting"
         android:title="设置"
         app:showAsAction="ifRoom"/>
-<!--
+
     <item
-        android:id="@+id/action_about"
-        android:title="关于"
-        app:showAsAction="never"/>
-        -->
+        android:id="@+id/action_robot"
+        android:icon="@mipmap/xiaoai"
+        android:title="聊天机器人小爱"
+        app:showAsAction="ifRoom"/>
+
 </menu>

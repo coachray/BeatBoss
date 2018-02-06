@@ -20,6 +20,8 @@ import java.util.Collections;
 import android.widget.ListView;
 import com.wiseking.ray.beatboss.db.DataHistory;
 import com.wiseking.ray.beatboss.util.CommonAdapter;
+import com.wiseking.ray.beatboss.util.GetBitmapUtils;
+import com.wiseking.ray.beatboss.util.MediaPlayUtils;
 import com.wiseking.ray.beatboss.util.Score;
 import com.wiseking.ray.beatboss.util.SoundPlayUtils;
 import com.wiseking.ray.beatboss.util.ViewHolder;
@@ -76,8 +78,9 @@ public class CheckHistory extends AppCompatActivity {
                         if (!isMute){                   //不静音就播放音效
                             SoundPlayUtils.play(1);  //播放按键音效
                         }
-                        Toast.makeText(CheckHistory.this,
-                                "share !", Toast.LENGTH_SHORT).show();
+                        GetBitmapUtils.screenShot(CheckHistory.this, true);
+//                        GetBitmapUtils.getListViewBitmap(mListView);
+                        GetBitmapUtils.showShare(CheckHistory.this,"历史记录界面分享","我发现了一个小游戏，来看看我的成绩吧。");
                         break;
                     case R.id.action_clear:
                         if (!isMute){                   //不静音就播放音效
@@ -161,6 +164,25 @@ public class CheckHistory extends AppCompatActivity {
             }
         },500 );
 
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+        //读取设定值
+        SharedPreferences settings = getSharedPreferences("setting", 0);
+        isMute= settings.getBoolean("ismute",false);
+        //通过AudioManager来设置了系统声音的静音,进入本游戏直接将系统声音静音
+        AudioManager mAudioManager = (AudioManager)getSystemService(Context.AUDIO_SERVICE);
+        // 设定调整音量为媒体音量,当暂停播放的时候调整音量就不会再默认调整铃声音量了，
+        setVolumeControlStream(AudioManager.STREAM_MUSIC);
+        mAudioManager.setStreamMute(AudioManager.STREAM_SYSTEM,true);
+        if (isMute)
+        {
+            MediaPlayUtils.pause();
+        }else {
+            MediaPlayUtils.play();
+        }
     }
 
     @Override
